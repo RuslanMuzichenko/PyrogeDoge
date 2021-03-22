@@ -120,7 +120,7 @@ def chanel_insert(phone, chanel_id, timer, connect):
 #upgrade chanel
 @sql_connection
 def chanel_upgrade(phone, chanel_id, timer, connect):
-    print(Fore.BLUE + f'{phone} add in DB', end=" ")
+    print(Fore.GREEN + f'{phone} DB updated', end=" ")
     cursor = connect.cursor()
     cursor.execute(f'UPDATE chanels SET TIMER = {timer} WHERE PHONE = "{phone}" AND CHANEL_ID = "{chanel_id}"')
     connect.commit()

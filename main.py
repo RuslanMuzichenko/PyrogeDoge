@@ -44,6 +44,10 @@ def bot_job(phone):
                     print(Fore.RED + f'{error}')
                     if 'USER_NOT_PARTICIPANT' in str(error):
                         chanel_delete(id, phone, chanel)
+                    elif 'CHANNEL_INVALID' in str(error):
+                        chanel_delete(id, phone, chanel)
+                    elif 'CHANNEL_PRIVATE' in str(error):
+                        chanel_delete(id, phone, chanel)
 
         global counter, chanel_id
 
@@ -61,13 +65,8 @@ def bot_job(phone):
             if counter == 0:
                 counter = 1
                 url = re.findall(r'http[s]?://doge.click/v\w+/\w+', f'{str(message)}')[0]
-                print(url)
-                chrome.get(url)
-                site = chrome.page_source
-                if 'Please allow up to 5 seconds' in site:
-                    print(Fore.RED + 'DDOS on CLICK')
-                    message.click('⏩ Skip')
-                else:
+                if 'visit' in url:
+                    chrome.get(url)
                     try:
                         timer = chrome.find_element_by_id('headbar')
                         t_wait = int(timer.get_attribute("data-timer"))
@@ -75,21 +74,55 @@ def bot_job(phone):
                         time.sleep(t_wait + 5)
                     except:
                         pass
+                else:
+                    print(Fore.YELLOW + 'DDoS on VISIT')
+                    message.click('⏩ Skip')
+            else:
+                app.send_message(715510199, '🤖 Message bots')
+
+        @app.on_message(filters.chat(715510199) & filters.regex('Press the "Message bot" botton'))
+        def log(app, message):
+            global counter
+            if counter == 1:
+                counter = 2
+                url = re.findall(r'http[s]?://doge.click/b\w+/\w+', f'{str(message)}')[0]
+                if 'doge.click/bot' in url:
+                    chrome.get(url)
+                    site = chrome.page_source
+                    bot = re.findall(r'Telegram: Contact @(.*)<', site)[0]
+                    try:
+                        bot_init_message = app.send_message(f'{bot}', '/start')
+                        bot_id = bot_init_message["chat"]["id"]
+                        bot_init_message_id = bot_init_message["message_id"]
+                        time.sleep(10)
+                        for message_to_forward in app.iter_history(bot_id, limit=1):
+                            message_to_forward_id = message_to_forward["message_id"]
+                            if bot_init_message_id != message_to_forward_id:
+                                app.forward_messages(715510199, 'me', message_to_forward_id)
+                            else:
+                                message.click('⏩ Skip')
+                        app.block_user(bot_id)
+                    except FloodWait as error:
+                        counter = 3
+                        print(Fore.RED + f'{error}')
+                        app.send_message(715510199, '💰 Balance')
+                    except Exception as error:
+                        print(Fore.RED + f'{error}')
+                        message.click('⏩ Skip')
+                else:
+                    print(Fore.YELLOW + 'DDoS on Bot')
+                    message.click('⏩ Skip')
             else:
                 app.send_message(715510199, '📣 Join chats')
 
         @app.on_message(filters.chat(715510199) & filters.regex('After joining, press the "Joined"'))
         def log(app, message):
             global counter, chanel_id
-            if counter == 1:
+            if counter == 2:
                 url = re.findall(r'http[s]?://doge.click/j\w+/\w+', f'{str(message)}')[0]
-                print(url)
-                chrome.get(url)
-                site = chrome.page_source
-                if 'Please allow up to 5 seconds' in site:
-                    print(Fore.RED + 'DDOS on CHANEL')
-                    message.click('⏩ Skip')
-                else:
+                if 'join' in url:
+                    chrome.get(url)
+                    site = chrome.page_source
                     try:
                         chanel = re.findall(r'Telegram: Contact @(.*)<', site)[0]
                         chat = app.join_chat(f'{chanel}')
@@ -99,20 +132,25 @@ def bot_job(phone):
                         message.click('✅ Joined')
                     except FloodWait as error:
                         print(Fore.RED + f'{error}')
-                        counter = 2
+                        counter = 3
                         app.send_message(715510199, '💰 Balance')
                     except Exception as error:
                         print(Fore.RED + f'{error}')
                         message.click('⏩ Skip')
+                else:
+                    print(Fore.YELLOW + 'DDoS on JOIN')
+                    message.click('⏩ Skip')
 
-        @app.on_message(filters.chat(715510199) & filters.regex('Press the "Message bot" botton'))
+
+        @app.on_message(filters.chat(715510199) & filters.regex('Use /join to get a new one'))
         def log(app, message):
-            print(message)
+            app.send_message(715510199, '/join')
 
         @app.on_message(filters.chat(715510199) & filters.regex('Available balance:'))
         def log(app, message):
-            if counter == 2:
-                balance = float(re.findall(r'Available balance: (.*) DOGE', message['text'])[0])
+            if counter == 3:
+                balance = float(re.findall(r'Available balance: (.*) DOGE', message["text"])[0])
+                print(Fore.GREEN + f'{message["text"]}')
                 if balance > 2.1:
                     message.click('💵 Withdraw')
                 else:
@@ -140,12 +178,23 @@ def bot_job(phone):
 
         @app.on_message(filters.chat(715510199) & filters.regex('click tasks are'))
         def log(app, message):
+            global counter
+            counter = 1
             print(Fore.RED + f'{phone} no CLICK avalible')
+            app.send_message(715510199, '🤖 Message bots')
+
+        @app.on_message(filters.chat(715510199) & filters.regex('bot tasks are'))
+        def log(app, message):
+            global counter
+            counter = 2
+            print(Fore.RED + f'{phone} no BOT avalible')
             app.send_message(715510199, '📣 Join chats')
 
         @app.on_message(filters.chat(715510199) & filters.regex('join tasks are'))
         def log(app, message):
-            print(Fore.RED + f'{phone} no CLICK avalible')
+            global counter
+            counter = 3
+            print(Fore.RED + f'{phone} no JOIN avalible')
             app.send_message(715510199, '💰 Balance')
 
 
