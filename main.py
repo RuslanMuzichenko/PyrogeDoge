@@ -48,7 +48,12 @@ def bot_job(phone):
         global counter, chanel_id
 
         counter = 0
-        app.send_message(715510199, '🖥 Visit sites')
+
+        try:
+            app.send_message('Dogecoin_click_bot', '🖥 Visit sites')
+        except Exception as error:
+            print(Fore.RED + f'{error}')
+            sys.exit()
 
         @app.on_message(filters.chat(715510199) & filters.regex('Press the "Visit website" button'))
         def log(app, message):
@@ -71,7 +76,7 @@ def bot_job(phone):
                     except:
                         pass
             else:
-                app.send_message('Dogecoin_click_bot', '📣 Join chats')
+                app.send_message(715510199, '📣 Join chats')
 
         @app.on_message(filters.chat(715510199) & filters.regex('After joining, press the "Joined"'))
         def log(app, message):
@@ -95,7 +100,7 @@ def bot_job(phone):
                     except FloodWait as error:
                         print(Fore.RED + f'{error}')
                         counter = 2
-                        app.send_message('Dogecoin_click_bot', '💰 Balance')
+                        app.send_message(715510199, '💰 Balance')
                     except Exception as error:
                         print(Fore.RED + f'{error}')
                         message.click('⏩ Skip')
@@ -130,8 +135,7 @@ def bot_job(phone):
         @app.on_message(filters.chat(715510199) & filters.regex('You must stay in the'))
         def log(app, message):
             global chanel_id
-            timer = (int(re.findall(r'(\d+) hour', f'{message["text"]}')[0])*3600)
-            print(timer)
+            timer = (int(re.findall(r'(\d+) hour', f'{message["text"]}')[0])*3600)+round(time.time())
             chanel_upgrade(phone, chanel_id, timer)
 
         @app.on_message(filters.chat(715510199) & filters.regex('click tasks are'))
@@ -143,7 +147,6 @@ def bot_job(phone):
         def log(app, message):
             print(Fore.RED + f'{phone} no CLICK avalible')
             app.send_message(715510199, '💰 Balance')
-
 
 
     scheduler = AsyncIOScheduler()
