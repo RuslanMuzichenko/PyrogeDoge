@@ -12,11 +12,9 @@ def sql_connection(method):
         try:
             kwargs['connect'] = sqlite3.connect(f'{path}/account.db')
             result = method(*args, **kwargs)
-            print('✅')
             return result
         except Error as error:
-            print('❌')
-            print(Fore.RED + f'ERROR: {error}')
+            print(Fore.RED + f'❌ ERROR: {error}')
         finally:
             kwargs['connect'].close()
     return wrapper
@@ -37,6 +35,7 @@ def make_tables():
         SYSTEM_VERSION TEXT,
         WALLET TEXT)""")
         connect.commit()
+        print('✅')
     accounts()
 
     @sql_connection
@@ -50,6 +49,7 @@ def make_tables():
         CHANEL_ID INTEGER NOT NULL,
         TIMER INTEGER NOT NULL)""")
         connect.commit()
+        print('✅')
     chanels()
 
 #view tables
@@ -87,19 +87,19 @@ def table_read_row(table, row, connect):
     for row in rows:
         result.add(row[0])
     connect.commit()
-    print(result, end=" ")
     return result
 
 #insert account
 @sql_connection
 def account_insert(phone, api_id, api_hash, app_version, device_model, system_version, wallet, connect):
-    print(Fore.BLUE + f'{phone} add in DB', end=" ")
+    print(Fore.BLUE + f'{phone} add in DB, end=" "')
     cursor = connect.cursor()
     cursor.execute(
         f'INSERT INTO accounts(PHONE, API_ID, API_HASH, APP_VERSION, DEVICE_MODEL, SYSTEM_VERSION, WALLET) '
         f'VALUES(?,?,?,?,?,?,?)',
         (phone, api_id, api_hash, app_version, device_model, system_version, wallet))
     connect.commit()
+    print('✅')
 #delete account
 @sql_connection
 def account_delete(phone, connect):
@@ -107,23 +107,26 @@ def account_delete(phone, connect):
     cursor = connect.cursor()
     cursor.execute(f'DELETE FROM accounts WHERE PHONE = "{phone}"')
     connect.commit()
+    print('✅')
 #insert chanel
 @sql_connection
 def chanel_insert(phone, chanel_id, timer, connect):
-    print(Fore.BLUE + f'{phone} add in DB', end=" ")
+    print(Fore.BLUE + f'{chanel_id} add in DB')
     cursor = connect.cursor()
     cursor.execute(
         f'INSERT INTO chanels(PHONE, CHANEL_ID, TIMER) '
         f'VALUES(?,?,?)',
         (phone, chanel_id, timer))
     connect.commit()
+
 #upgrade chanel
 @sql_connection
 def chanel_upgrade(phone, chanel_id, timer, connect):
-    print(Fore.GREEN + f'{phone} DB updated', end=" ")
+    print(Fore.GREEN + f'{chanel_id} complete', end=" ")
     cursor = connect.cursor()
     cursor.execute(f'UPDATE chanels SET TIMER = {timer} WHERE PHONE = "{phone}" AND CHANEL_ID = "{chanel_id}"')
     connect.commit()
+    print('✅')
 
 
 #--------  CHANEL TABLE  --------#
@@ -159,7 +162,7 @@ def get_chanel_id(id, connect):
 
 @sql_connection
 def chanel_delete(id, phone, chanel_id, connect):
-    print(Fore.YELLOW + f'{phone} DELETE: {chanel_id}', end=" ")
+    print(Fore.YELLOW + f'DELETE: {chanel_id}')
     cursor = connect.cursor()
     cursor.execute(f'DELETE FROM chanels WHERE ID = "{id}"')
     connect.commit()
@@ -172,7 +175,6 @@ def get_api_id(phone, connect):
     cursor.execute(f'SELECT API_ID FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 
@@ -182,7 +184,6 @@ def get_api_hash(phone, connect):
     cursor.execute(f'SELECT API_HASH FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 
@@ -192,7 +193,6 @@ def get_app_version(phone, connect):
     cursor.execute(f'SELECT APP_VERSION FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 
@@ -202,7 +202,6 @@ def get_device_model(phone, connect):
     cursor.execute(f'SELECT DEVICE_MODEL FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 
@@ -212,7 +211,6 @@ def get_system_version(phone, connect):
     cursor.execute(f'SELECT SYSTEM_VERSION FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 
@@ -222,7 +220,6 @@ def get_wallet(phone, connect):
     cursor.execute(f'SELECT WALLET FROM accounts WHERE PHONE = "{phone}"')
     rows = cursor.fetchall()
     for row in rows:
-        print(row[0], end=" ")
         return row[0]
     connect.commit()
 

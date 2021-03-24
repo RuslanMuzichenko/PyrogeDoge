@@ -80,7 +80,7 @@ def bot_job(phone):
                 except:
                     pass
             else:
-                print(Fore.YELLOW + 'DDoS on VISIT')
+                print(Fore.RED + 'DDOS on VISIT')
                 message.click('⏩ Skip')
         else:
             app.send_message(715510199, '🤖 Message bots')
@@ -115,7 +115,7 @@ def bot_job(phone):
                     print(Fore.RED + f'{error}')
                     message.click('⏩ Skip')
             else:
-                print(Fore.YELLOW + 'DDoS on Bot')
+                print(Fore.RED + 'DDOS on BOT')
                 message.click('⏩ Skip')
         else:
             app.send_message(715510199, '📣 Join chats')
@@ -143,19 +143,37 @@ def bot_job(phone):
                     print(Fore.RED + f'{error}')
                     message.click('⏩ Skip')
             else:
-                print(Fore.YELLOW + 'DDoS on JOIN')
+                print(Fore.RED + 'DDOS on JOIN')
                 message.click('⏩ Skip')
+
+        if counter == 4:
+            message.click('✅ Joined')
+
+        if counter == 5:
+            counter = 2
+            message.click('⏩ Skip')
 
 
     @app.on_message(filters.chat(715510199) & filters.regex('Use /join to get a new one'))
     def log(app, message):
         app.send_message(715510199, '/join')
 
+    @app.on_message(filters.chat(715510199) & filters.regex('try rejoining the'))
+    def log(app, message):
+        global counter
+        if counter == 2:
+            counter = 4
+            app.send_message(715510199, '/join')
+        else:
+            counter = 5
+            app.send_message(715510199, '/join')
+
     @app.on_message(filters.chat(715510199) & filters.regex('Available balance:'))
     def log(app, message):
         if counter == 3:
             balance = float(re.findall(r'Available balance: (.*) DOGE', message["text"])[0])
             print(Fore.GREEN + f'{message["text"]}')
+            print(Fore.CYAN + f'TOTAL: {len(get_id_key(phone))} CHANEL')
             if balance > 2.1:
                 message.click('💵 Withdraw')
             else:
@@ -268,7 +286,7 @@ except Exception as error:
     sys.exit()
 
 Phones = table_read_row(row='PHONE', table='accounts')
-print(Fore.BLUE + f'All account count = {len(Phones)}')
+print(Fore.GREEN + f'ALL ACCOUNT = {len(Phones)}')
 for phone in Phones:
     if __name__ == '__main__':
         bot = Process(target=bot_job, args=(phone,))
